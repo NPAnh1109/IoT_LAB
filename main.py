@@ -3,10 +3,11 @@ import sys
 from Adafruit_IO import MQTTClient
 import time
 import random
+from simpleAI import *
 
 AIO_FEED_IDs = ["button1", "button2"]
 AIO_USERNAME = "NPAnh"
-AIO_KEY = "aio_HSTK05HKCYOxOGF6rFozE03ubLnz"
+AIO_KEY = "aio_Pzfz11Ij1KKdnQKKWS2fBHMDTYZ5"
 
 def connected(client):
     print("Ket noi thanh cong ...")
@@ -32,6 +33,8 @@ client.connect()
 client.loop_background()
 counter = 10
 sensor_type = 0
+counter_ai = 5
+ai_result = ""
 
 while True:
     counter = counter -1
@@ -54,6 +57,20 @@ while True:
             light = random.randint(100, 500)
             client.publish("sensor3", light)
             sensor_type = 0
-
+    counter_ai = counter_ai - 1
+    if counter_ai <= 0:
+        counter_ai = 5
+        prev_ai = ai_result
+        ai_result = image_detector()
+        if prev_ai != ai_result:
+            client.publish("AI", ai_result)    
+        # print("AI_Output: ", ai_result)
+        
     time.sleep(1)
-    pass
+    # pass
+    # Listen to the keyboard for presses.
+    # keyboard_input = cv2.waitKey(1)
+
+    # # 27 is the ASCII for the esc key on your keyboard.
+    # if keyboard_input == 27:
+    #     break
